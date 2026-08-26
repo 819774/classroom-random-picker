@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Assistant | Almudena Pérez</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 flex flex-col justify-between">
+
+  <!-- HEADER / BRANDING PRINCIPAL -->
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Enlace directo a tu GitHub en el Header -->
+      <a href="https://github.com/819774" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3 group transition">
+        <!-- Logo Black (Light Mode) -->
+        <img src="./assets/logo-black.png" alt="Almudena Pérez Logo" class="h-8 w-auto dark:hidden group-hover:opacity-80 transition" onerror="this.style.display='none'; document.getElementById('logo-fallback-header').classList.remove('hidden')">
+        <!-- Logo White (Dark Mode) -->
+        <img src="./assets/logo-white.png" alt="Almudena Pérez Logo" class="h-8 w-auto hidden dark:block group-hover:opacity-80 transition" onerror="this.style.display='none'; document.getElementById('logo-fallback-header').classList.remove('hidden')">
+        
+        <!-- Fallback de texto con iniciales -->
+        <div id="logo-fallback-header" class="hidden h-8 w-8 rounded bg-brand-600 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+          AP
+        </div>
+
+        <span class="font-semibold text-sm sm:text-base tracking-tight border-l border-slate-300 dark:border-slate-700 pl-3 group-hover:text-brand-600 dark:group-hover:text-brand-500 transition">
+          Almudena Pérez <span class="text-slate-400 font-normal hidden md:inline">| Software Engineer</span>
+        </span>
+      </a>
+
+      <!-- Controls (CTA Info + i18n + Theme) -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        
+        <!-- Botón / Llamada a la acción (CTA) de Información -->
+        <button onclick="toggleInfoModal(true)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-slate-700 hover:bg-brand-100 dark:hover:bg-slate-700 font-medium text-xs sm:text-sm transition shadow-sm animate-pulse hover:animate-none">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+          <span data-i18n="infoCTA">¿Cómo funciona?</span>
+        </button>
+
+        <!-- Selector de Idioma con Banderas de Assets -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium">
+          <button id="lang-es" onclick="setLanguage('es')" class="px-2 py-1 rounded-md transition-colors flex items-center gap-1.5">
+            <img src="./assets/flag-es.png" alt="ES" class="w-4 h-3 object-cover rounded-sm" onerror="this.outerHTML='🇪🇸'">
+            <span class="hidden sm:inline">ES</span>
+          </button>
+          <button id="lang-en" onclick="setLanguage('en')" class="px-2 py-1 rounded-md transition-colors flex items-center gap-1.5">
+            <img src="./assets/flag-en.png" alt="EN" class="w-4 h-3 object-cover rounded-sm" onerror="this.outerHTML='🇬🇧'">
+            <span class="hidden sm:inline">EN</span>
+          </button>
+        </div>
+
+        <!-- Botón Modo Oscuro -->
+        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- GRID DE HERRAMIENTAS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- COLUMNA IZQUIERDA: Gestión de Alumnos -->
+      <section class="lg:col-span-4 bg-white dark:bg-slate-950 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold flex items-center gap-2">
+            <i data-lucide="users" class="w-5 h-5 text-brand-600"></i>
+            <span data-i18n="studentListTitle">Lista de Alumnos</span>
+          </h2>
+          <span id="student-count" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+            0 alumnos
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-3" data-i18n="studentListHelp">
+          Pega o escribe los nombres separados por saltos de línea. Se guardan automáticamente.
+        </p>
+
+        <textarea 
+          id="student-input" 
+          rows="12" 
+          class="w-full flex-1 p-3 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-600 focus:outline-none transition resize-none font-mono"
+          placeholder="María García&#10;Juan Pérez&#10;Lucas Silva..."
+        ></textarea>
+
+        <div class="mt-3 flex justify-between items-center text-xs text-slate-400">
+          <span id="save-status" class="flex items-center gap-1">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> <span data-i18n="savedStatus">Guardado</span>
+          </span>
+          <button onclick="clearStudents()" class="text-red-500 hover:text-red-600 font-medium transition" data-i18n="clearBtn">
+            Borrar todo
+          </button>
+        </div>
+      </section>
+
+      <!-- COLUMNA DERECHA: Herramientas de Aula -->
+      <section class="lg:col-span-8 space-y-6">
+
+        <!-- TOOL 1: Selector Aleatorio -->
+        <div class="bg-white dark:bg-slate-950 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 text-center">
+          <h2 class="text-lg font-bold text-left mb-4 flex items-center gap-2">
+            <i data-lucide="dices" class="w-5 h-5 text-brand-600"></i>
+            <span data-i18n="pickerTitle">Selector Aleatorio</span>
+          </h2>
+
+          <div class="my-6 py-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center min-h-[140px]">
+            <div id="winner-display" class="text-3xl sm:text-5xl font-extrabold text-brand-600 transition-all duration-300">
+              ?
+            </div>
+          </div>
+
+          <button 
+            id="btn-pick"
+            onclick="pickRandomStudent()" 
+            class="w-full sm:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/20 active:scale-95 transition flex items-center justify-center gap-2 mx-auto"
+          >
+            <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+            <span data-i18n="pickBtn">¡Elegir Alumno!</span>
+          </button>
+        </div>
+
+        <!-- GRID INFERIOR: Grupos + Temporizador -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- TOOL 2: Generador de Grupos -->
+          <div class="bg-white dark:bg-slate-950 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
+            <h2 class="text-lg font-bold mb-3 flex items-center gap-2">
+              <i data-lucide="users-round" class="w-5 h-5 text-brand-600"></i>
+              <span data-i18n="groupsTitle">Crear Grupos</span>
+            </h2>
+
+            <div class="flex items-center gap-3 mb-4">
+              <label class="text-xs text-slate-500" data-i18n="studentsPerGroup">Alumnos por grupo:</label>
+              <input id="group-size" type="number" min="2" max="10" value="3" class="w-16 p-1.5 text-center text-sm font-semibold rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-600 focus:outline-none">
+              <button onclick="generateGroups()" class="flex-1 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-medium text-sm rounded-lg transition" data-i18n="generateBtn">
+                Generar
+              </button>
+            </div>
+
+            <div id="groups-container" class="flex-1 max-h-48 overflow-y-auto space-y-2 text-xs pr-1">
+              <p class="text-slate-400 italic text-center py-6" data-i18n="noGroups">Haz clic en generar para organizar la clase.</p>
+            </div>
+          </div>
+
+          <!-- TOOL 3: Temporizador -->
+          <div class="bg-white dark:bg-slate-950 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+            <h2 class="text-lg font-bold mb-2 flex items-center gap-2">
+              <i data-lucide="timer" class="w-5 h-5 text-brand-600"></i>
+              <span data-i18n="timerTitle">Temporizador</span>
+            </h2>
+
+            <div id="timer-display" class="text-4xl font-mono font-bold text-center py-2 tracking-wider text-slate-700 dark:text-slate-200">
+              05:00
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex justify-center gap-2">
+                <button onclick="setTimerPreset(60)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition">1m</button>
+                <button onclick="setTimerPreset(300)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition">5m</button>
+                <button onclick="setTimerPreset(600)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition">10m</button>
+              </div>
+
+              <div class="flex items-center justify-center gap-2 text-xs">
+                <span class="text-slate-500" data-i18n="customMin">Minutos:</span>
+                <input id="custom-minutes" type="number" min="1" max="180" value="5" class="w-16 p-1 text-center font-semibold rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:ring-1 focus:ring-brand-600 focus:outline-none">
+                <button onclick="setCustomTimer()" class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded font-medium hover:bg-slate-300 dark:hover:bg-slate-700 transition" data-i18n="setBtn">Fijar</button>
+              </div>
+
+              <div class="flex gap-2">
+                <button id="btn-timer-start" onclick="toggleTimer()" class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs rounded-lg transition" data-i18n="start">
+                  Iniciar
+                </button>
+                <button onclick="resetTimer()" class="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium text-xs rounded-lg transition" data-i18n="reset">
+                  Reiniciar
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- SECCIÓN DE BRANDING / BANNER CON LOGO GRANDE EN LA PARTE INFERIOR -->
+    <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-100 to-white dark:from-slate-950 dark:to-slate-900 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+      <div class="flex items-center gap-4 text-center sm:text-left">
+        <!-- Logo en tamaño grande -->
+        <a href="https://github.com/819774" target="_blank" rel="noopener noreferrer" class="group shrink-0">
+          <img src="./assets/logo-black.png" alt="Almudena Pérez" class="h-12 sm:h-14 w-auto dark:hidden group-hover:scale-105 transition" onerror="this.style.display='none'; document.getElementById('hero-logo-fallback').classList.remove('hidden')">
+          <img src="./assets/logo-white.png" alt="Almudena Pérez" class="h-12 sm:h-14 w-auto hidden dark:block group-hover:scale-105 transition" onerror="this.style.display='none'; document.getElementById('hero-logo-fallback').classList.remove('hidden')">
+          
+          <div id="hero-logo-fallback" class="hidden h-12 w-12 rounded-xl bg-brand-600 text-white font-bold flex items-center justify-center text-xl shadow">
+            AP
+          </div>
+        </a>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100">
+            Classroom Assistant
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400" data-i18n="heroSubtitle">
+            Herramientas interactivas para gestión de aula por <a href="https://github.com/819774" target="_blank" class="font-semibold text-brand-600 hover:underline">Almudena Pérez</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Enlace directo destacado -->
+      <a href="https://github.com/819774" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold text-xs sm:text-sm hover:opacity-90 transition shadow-sm shrink-0">
+        <i data-lucide="github" class="w-4 h-4"></i>
+        <span>github.com/819774</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE INFORMACIÓN (ONBOARDING) -->
+  <div id="info-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="toggleInfoModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-brand-600" data-i18n="modalTitle">
+        👋 ¡Bienvenido/a! ¿Cómo funciona?
+      </h3>
+
+      <div class="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+        <p data-i18n="modalStep1"><strong>1. Lista de Alumnos:</strong> Pega los nombres de tu clase. Se quedan guardados automáticamente para tu próxima sesión.</p>
+        <p data-i18n="modalStep2"><strong>2. Ruleta Aleatoria:</strong> Pulsa el botón para elegir a un alumno al azar de forma justa y animada.</p>
+        <p data-i18n="modalStep3"><strong>3. Grupos Automáticos:</strong> Indica cuántos alumnos quieres por grupo y organiza equipos en un clic.</p>
+        <p data-i18n="modalStep4"><strong>4. Temporizador con Alarma:</strong> Pon el tiempo de la actividad. Sonará un pitido cuando el tiempo termine.</p>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span>Made with ❤️ by Almudena Pérez</span>
+        <a href="https://github.com/819774" target="_blank" class="text-brand-600 hover:underline">github.com/819774</a>
+      </div>
+
+      <button onclick="toggleInfoModal(false)" class="mt-4 w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm rounded-xl transition" data-i18n="modalClose">
+        ¡Entendido!
+      </button>
+    </div>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    // --- DICCIONARIO I18N ---
+    const translations = {
+      es: {
+        infoCTA: "¿Cómo funciona?",
+        heroSubtitle: "Herramientas interactivas para gestión de aula por",
+        studentListTitle: "Lista de Alumnos",
+        studentListHelp: "Pega o escribe los nombres separados por saltos de línea.",
+        savedStatus: "Guardado",
+        clearBtn: "Borrar todo",
+        pickerTitle: "Selector Aleatorio",
+        pickBtn: "¡Elegir Alumno!",
+        groupsTitle: "Crear Grupos",
+        studentsPerGroup: "Alumnos por grupo:",
+        generateBtn: "Generar",
+        noGroups: "Haz clic en generar para organizar la clase.",
+        timerTitle: "Temporizador",
+        customMin: "Minutos:",
+        setBtn: "Fijar",
+        start: "Iniciar",
+        pause: "Pausar",
+        reset: "Reiniciar",
+        emptyPickerError: "¡Añade alumnos primero!",
+        groupError: "Necesitas al menos 2 alumnos para hacer grupos.",
+        groupTitle: "Grupo",
+        countSuffix: "alumnos",
+        modalTitle: "👋 ¡Bienvenido/a! ¿Cómo funciona?",
+        modalStep1: "1. Lista de Alumnos: Pega los nombres de tu clase. Se guardan automáticamente.",
+        modalStep2: "2. Ruleta Aleatoria: Elige a un alumno al azar de forma justa.",
+        modalStep3: "3. Grupos Automáticos: Organiza a la clase en equipos en un clic.",
+        modalStep4: "4. Temporizador: Pon el tiempo para tus tareas y escuchas la alarma al finalizar.",
+        modalClose: "¡Entendido!"
+      },
+      en: {
+        infoCTA: "How it works?",
+        heroSubtitle: "Interactive classroom management tools by",
+        studentListTitle: "Student List",
+        studentListHelp: "Paste or type names separated by new lines.",
+        savedStatus: "Saved",
+        clearBtn: "Clear all",
+        pickerTitle: "Random Picker",
+        pickBtn: "Pick Student!",
+        groupsTitle: "Group Generator",
+        studentsPerGroup: "Students per group:",
+        generateBtn: "Generate",
+        noGroups: "Click generate to group the class.",
+        timerTitle: "Classroom Timer",
+        customMin: "Minutes:",
+        setBtn: "Set",
+        start: "Start",
+        pause: "Pause",
+        reset: "Reset",
+        emptyPickerError: "Add students first!",
+        groupError: "You need at least 2 students to form groups.",
+        groupTitle: "Group",
+        countSuffix: "students",
+        modalTitle: "👋 Welcome! How does it work?",
+        modalStep1: "1. Student List: Paste your roster. Names are saved automatically.",
+        modalStep2: "2. Random Picker: Fairly pick a random student with slot animation.",
+        modalStep3: "3. Group Generator: Instantly divide your class into teams.",
+        modalStep4: "4. Timer with Alarm: Set activity times and listen for the sound alert when done.",
+        modalClose: "Got it!"
+      }
+    };
+
+    let currentLang = localStorage.getItem('app_lang') || 'es';
+    let students = [];
+    let isPicking = false;
+    let timerInterval = null;
+    let timerSeconds = 300;
+    let timerRunning = false;
+
+    // --- INICIALIZACIÓN ---
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStudents();
+      setLanguage(currentLang);
+      initTheme();
+      updateTimerDisplay();
+      lucide.createIcons();
+
+      document.getElementById('student-input').addEventListener('input', (e) => {
+        saveStudents(e.target.value);
+      });
+    });
+
+    // --- SONIDO DE ALARMA (Web Audio API) ---
+    function playAlarmSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch (e) {
+        console.log("Audio not supported or blocked");
+      }
+    }
+
+    // --- MODAL DE INFORMACIÓN ---
+    function toggleInfoModal(show) {
+      const modal = document.getElementById('info-modal');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // --- TRADUCCIÓN ---
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('app_lang', lang);
+
+      const btnEs = document.getElementById('lang-es');
+      const btnEn = document.getElementById('lang-en');
+      
+      if (lang === 'es') {
+        btnEs.className = "px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 bg-white dark:bg-slate-700 shadow-sm text-brand-600 dark:text-white font-bold";
+        btnEn.className = "px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200";
+      } else {
+        btnEn.className = "px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 bg-white dark:bg-slate-700 shadow-sm text-brand-600 dark:text-white font-bold";
+        btnEs.className = "px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200";
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          elem.textContent = translations[lang][key];
+        }
+      });
+
+      updateStudentCount();
+    }
+
+    // --- ALUMNOS ---
+    function loadStudents() {
+      const saved = localStorage.getItem('app_students');
+      if (saved) {
+        document.getElementById('student-input').value = saved;
+        parseStudents(saved);
+      }
+    }
+
+    function saveStudents(text) {
+      localStorage.setItem('app_students', text);
+      parseStudents(text);
+    }
+
+    function parseStudents(text) {
+      students = text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+      updateStudentCount();
+    }
+
+    function updateStudentCount() {
+      const countElem = document.getElementById('student-count');
+      const suffix = translations[currentLang].countSuffix;
+      countElem.textContent = `${students.length} ${suffix}`;
+    }
+
+    function clearStudents() {
+      if (confirm(currentLang === 'es' ? '¿Seguro que deseas borrar la lista?' : 'Are you sure you want to clear the list?')) {
+        document.getElementById('student-input').value = '';
+        saveStudents('');
+        document.getElementById('winner-display').textContent = '?';
+        document.getElementById('groups-container').innerHTML = `<p class="text-slate-400 italic text-center py-6">${translations[currentLang].noGroups}</p>`;
+      }
+    }
+
+    // --- RULETA ---
+    function pickRandomStudent() {
+      if (isPicking) return;
+      if (students.length === 0) {
+        alert(translations[currentLang].emptyPickerError);
+        return;
+      }
+
+      isPicking = true;
+      const display = document.getElementById('winner-display');
+      const btn = document.getElementById('btn-pick');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      let counter = 0;
+      const totalRounds = 25;
+      const interval = setInterval(() => {
+        const randomIndex = Math.floor(Math.random() * students.length);
+        display.textContent = students[randomIndex];
+        display.classList.add('scale-105');
+        setTimeout(() => display.classList.remove('scale-105'), 50);
+
+        counter++;
+        if (counter >= totalRounds) {
+          clearInterval(interval);
+          const finalIndex = Math.floor(Math.random() * students.length);
+          display.textContent = students[finalIndex];
+          display.classList.add('scale-115', 'text-emerald-500');
+          setTimeout(() => display.classList.remove('text-emerald-500'), 1500);
+
+          isPicking = false;
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }, 80);
+    }
+
+    // --- GRUPOS ---
+    function generateGroups() {
+      if (students.length < 2) {
+        alert(translations[currentLang].groupError);
+        return;
+      }
+
+      const groupSize = parseInt(document.getElementById('group-size').value) || 2;
+      const shuffled = [...students].sort(() => Math.random() - 0.5);
+      
+      const groups = [];
+      for (let i = 0; i < shuffled.length; i += groupSize) {
+        groups.push(shuffled.slice(i, i + groupSize));
+      }
+
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      groups.forEach((group, index) => {
+        const groupEl = document.createElement('div');
+        groupEl.className = "p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800";
+        groupEl.innerHTML = `
+          <span class="font-bold text-brand-600 block mb-1">${translations[currentLang].groupTitle} ${index + 1}</span>
+          <span class="text-slate-600 dark:text-slate-300">${group.join(', ')}</span>
+        `;
+        container.appendChild(groupEl);
+      });
+    }
+
+    // --- TEMPORIZADOR Y CUSTOM TIME ---
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+      const secs = (timerSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('btn-timer-start');
+      
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        btn.textContent = translations[currentLang].start;
+        btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+        btn.classList.add('bg-brand-600', 'hover:bg-brand-700');
+      } else {
+        if (timerSeconds <= 0) return;
+        timerRunning = false;
+        timerRunning = true;
+        btn.textContent = translations[currentLang].pause;
+        btn.classList.remove('bg-brand-600', 'hover:bg-brand-700');
+        btn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+
+        timerInterval = setInterval(() => {
+          timerSeconds--;
+          updateTimerDisplay();
+
+          if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            btn.textContent = translations[currentLang].start;
+            btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+            btn.classList.add('bg-brand-600', 'hover:bg-brand-700');
+            playAlarmSound();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerSeconds = 300;
+      updateTimerDisplay();
+      const btn = document.getElementById('btn-timer-start');
+      btn.textContent = translations[currentLang].start;
+      btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+      btn.classList.add('bg-brand-600', 'hover:bg-brand-700');
+    }
+
+    function setTimerPreset(seconds) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerSeconds = seconds;
+      updateTimerDisplay();
+      const btn = document.getElementById('btn-timer-start');
+      btn.textContent = translations[currentLang].start;
+    }
+
+    function setCustomTimer() {
+      const mins = parseInt(document.getElementById('custom-minutes').value);
+      if (mins && mins > 0) {
+        setTimerPreset(mins * 60);
+      }
+    }
+
+    // --- MODO OSCURO ---
+    function initTheme() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    function toggleDarkMode() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+  </script>
+</body>
+</html>
