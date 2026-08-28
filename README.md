@@ -7,7 +7,7 @@
 <a name="español"></a>
 ## 🇪🇸 Español
 
-> 💡 **¿Eres profesor/a y no sabes de informática?** ¡No te preocupes! Esta herramienta funciona directamente desde el navegador de tu ordenador, tablet o pizarra digital. No necesitas instalar nada ni registrarte. ¡Solo entra y empieza a usarla en tu clase!
+> 💡 **¿Eres profesor/a y no sabes de informática?** ¡No te preocupes! Esta herramienta funciona directamente desde el navegador de tu ordenador, tablet o pizarra digital. No necesitas instalar nada ni registrarte. ¡Solo entra y empieza a usarla en tu clase! Aquí https://819774.github.io/classroom-random-picker/
 
 ---
 
@@ -53,7 +53,7 @@ Desarrollado con ❤️ por [Almudena Pérez](https://github.com/819774).
 <a name="english"></a>
 ## 🇬🇧 English
 
-> 💡 **Are you a teacher with no tech background?** Don't worry! This tool runs directly in your browser on any computer, tablet, or smartboard. No installation, sign-ups, or technical knowledge required. Just open it and start using it in your classroom!
+> 💡 **Are you a teacher with no tech background?** Don't worry! This tool runs directly in your browser on any computer, tablet, or smartboard. No installation, sign-ups, or technical knowledge required. Just open it and start using it in your classroom! Here https://819774.github.io/classroom-random-picker/
 
 ---
 
